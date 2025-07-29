@@ -2,9 +2,12 @@
 set -e
 export BUILDKIT_PROGRESS=plain
 
-ARCHES="linux/amd64,linux/arm,linux/arm64"
+#32bit is currently broken
+ARCHES="linux/amd64,linux/arm64"
 IMAGE="behierarchic"
-VERSION=$(date "+%Y-%m-%d_%H-%M-%S")
+cd $HOME/git/BeHierarchic
+VERSION=$(git rev-parse HEAD)
+cd "$OLDPWD"
 
-sudo docker buildx build --platform "${ARCHES}" -t yhaenggi/${IMAGE}:${VERSION} --build-arg VERSION=${VERSION} --push .
-sudo docker buildx build --platform "${ARCHES}" -t registry.traefik.k8s.darkgamex.ch/${IMAGE}:${VERSION} --build-arg VERSION=${VERSION} --push .
+sudo --preserve-env=BUILDKIT_PROGRESS docker buildx build --platform "${ARCHES}" -t yhaenggi/${IMAGE}:${VERSION} -t registry.traefik.k8s.darkgamex.ch/${IMAGE}:${VERSION} --build-arg VERSION=${VERSION} --push .
+echo registry.traefik.k8s.darkgamex.ch/${IMAGE}:${VERSION} is ready.
